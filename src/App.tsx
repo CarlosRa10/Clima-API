@@ -1,4 +1,5 @@
 import styles from './App.module.css'
+import Form from './components/Form/Form'
 
 
 function App() {
@@ -7,7 +8,7 @@ function App() {
       <h1 className={styles.title}>Hola Vite + React + TypeScript + CSS Modules!</h1>
 
       <div className={styles.container}>
-        <p>1</p>
+        <Form/>
         <p>2</p>
       </div>
     </>
