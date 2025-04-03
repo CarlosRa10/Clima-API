@@ -1,3 +1,7 @@
+
+/* Estos son los estilos globales de la app, se pueden agregar más estilos a medida que se necesiten. */
+/* Se importan las fuentes de google fonts */
+
 :root{
     --white: #FFF;
     --primary:#F59E0B;
@@ -8,7 +12,10 @@ html {
 body{
     font-family: "Outfit", sans-serif;
     background-image: url('/bg-clima-2.webp');
-    height: 100vh;
     /* background cover para que tome todo el ancho  */
     background-size: cover;
+    background-repeat: no-repeat;
+    height: 100vh;
+    color: var(--white);
+    font-size: 2rem;
 }
