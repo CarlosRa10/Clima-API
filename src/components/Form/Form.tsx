@@ -4,7 +4,11 @@ import { countries } from "../../data/countries";
 import styles from "./Form.module.css";
 import Alert from "../Alert/Alert";
 
-export default function Form() {
+type FormProps = {
+    fetchWeather: () => void
+}
+
+export default function Form({fetchWeather}: FormProps) {//Recibe props de tipo FormProps y destructura fetchWeather
     const [search, setSearch] = useState<SearchType>({
         city: "",
         country: ""
@@ -37,6 +41,9 @@ export default function Form() {
             setAlert("Por favor complete todos los campos");//Esto causa un re-render del componente
             return;
         }
+
+        //fetchWeather es una función que se encarga de consultar el clima y se pasa como prop al componente Form.tsx
+        fetchWeather()////Llama a la función fetchWeather que se pasó como prop al componente Form.tsx
      }
 
     return (
