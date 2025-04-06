@@ -8,7 +8,7 @@ export default function useWeather() {
     const fetchWeather = async (search: SearchType) => {
         //console.log('Consultando...')
 
-        const appId = '46922012d7b1402fb8e4a8bf9822509a'//API key de OpenWeatherMap
+        const appId = ''//API key de OpenWeatherMap
 
         try {
 
