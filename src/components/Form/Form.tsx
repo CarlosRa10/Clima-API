@@ -5,7 +5,7 @@ import styles from "./Form.module.css";
 import Alert from "../Alert/Alert";
 
 type FormProps = {
-    fetchWeather: () => void
+    fetchWeather: (search: SearchType) => Promise<void>; //Definimos el tipo de la prop fetchWeather como una función que recibe un objeto de tipo SearchType y devuelve una promesa que resuelve en void
 }
 
 export default function Form({fetchWeather}: FormProps) {//Recibe props de tipo FormProps y destructura fetchWeather
@@ -43,7 +43,7 @@ export default function Form({fetchWeather}: FormProps) {//Recibe props de tipo 
         }
 
         //fetchWeather es una función que se encarga de consultar el clima y se pasa como prop al componente Form.tsx
-        fetchWeather()////Llama a la función fetchWeather que se pasó como prop al componente Form.tsx
+        fetchWeather(search)////Llama a la función fetchWeather que se pasó como prop al componente Form.tsx
      }
 
     return (
@@ -82,7 +82,7 @@ export default function Form({fetchWeather}: FormProps) {//Recibe props de tipo 
                         {countries.map(country=>(
                             <option
                             key={country.code}
-                            value={country.name}
+                            value={country.code}
                             >{country.name}</option>
                         ))}
                     </select>
