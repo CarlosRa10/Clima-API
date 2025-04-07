@@ -2,11 +2,11 @@ import styles from './App.module.css'
 import Form from './components/Form/Form'
 import useWeather from './hooks/useWeather'
 
-//Extraemos la función fetchWeather de useWeather
-const {fetchWeather} = useWeather()
 // del hooks useWeather.tsx extraemos la función fetchWeather y la pasamos como prop al componente Form.tsx
 
 function App() {
+  //Extraemos la función fetchWeather de useWeather
+  const {fetchWeather} = useWeather()
   
   return (
     <>
