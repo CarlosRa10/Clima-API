@@ -2,7 +2,7 @@ import axios from 'axios'//axios es una librería que permite hacer peticiones H
 import {z} from 'zod'//zod es una librería que permite validar y parsear datos de manera sencilla y segura - la z es como el objeto principal cuando trabajamos con zod
 //import {object,string,number,InferOutput,parse} from 'valibot'//puedo importar de forma individual los tipos de datos que voy a usar, eso lo hace modular y mas ligero
 import { SearchType } from '../types'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 //TYPE GUARD O ASSERTION - comprobar la respuesta de una API sin librerias
 // Verifica si el objeto tiene las propiedades esperadas
@@ -133,8 +133,15 @@ export default function useWeather() {
             
         }
     }
+
+//useMemo() es un hook de React que memoriza un valor calculado y lo vuelve a calcular solo cuando cambian las dependencias que le pasamos - es como un useEffect pero para valores - se usa para optimizar el rendimiento de la aplicación - se usa para evitar que se recalculen valores innecesariamente
+//ponemos de dependencia el state de weather
+    const hasWeatherData = useMemo(() => weather.name ,[weather])//si weather.name tiene algo entonces hasWeatherData va a ser true - si no tiene nada entonces hasWeatherData va a ser false - es un booleano que indica si hay datos del clima o no - se usa para mostrar u ocultar el componente WeatherDetail.tsx 
+
+
     return{
         weather,
-        fetchWeather
+        fetchWeather,
+        hasWeatherData
     }
  }

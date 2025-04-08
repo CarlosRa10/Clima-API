@@ -7,7 +7,8 @@ import useWeather from './hooks/useWeather'
 
 function App() {
   //Extraemos la función fetchWeather de useWeather
-  const {weather, fetchWeather} = useWeather()
+  // todo esto es lo que exportando de useWeather.tsx
+  const {weather, fetchWeather, hasWeatherData} = useWeather()
   
   return (
     <>
@@ -19,9 +20,8 @@ function App() {
           fetchWeather={fetchWeather} //Pasamos la función fetchWeather como prop
         />
 
-        <WeatherDetail
-          weather={weather} //Pasamos el objeto weather como prop
-        />
+        {/* Si hasWeatherData es true entonces mostramos el componente WeatherDetail */}
+        {hasWeatherData &&  <WeatherDetail weather={weather} />}
 
       </div>
     </>
