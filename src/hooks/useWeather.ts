@@ -1,7 +1,8 @@
 import axios from 'axios'//axios es una librería que permite hacer peticiones HTTP de manera más sencilla que fetch
-//import {z} from 'zod'//zod es una librería que permite validar y parsear datos de manera sencilla y segura - la z es como el objeto principal cuando trabajamos con zod
-import {object,string,number,InferOutput,parse} from 'valibot'//puedo importar de forma individual los tipos de datos que voy a usar, eso lo hace modular y mas ligero
+import {z} from 'zod'//zod es una librería que permite validar y parsear datos de manera sencilla y segura - la z es como el objeto principal cuando trabajamos con zod
+//import {object,string,number,InferOutput,parse} from 'valibot'//puedo importar de forma individual los tipos de datos que voy a usar, eso lo hace modular y mas ligero
 import { SearchType } from '../types'
+import { useState } from 'react'
 
 //TYPE GUARD O ASSERTION - comprobar la respuesta de una API sin librerias
 // Verifica si el objeto tiene las propiedades esperadas
@@ -25,33 +26,43 @@ import { SearchType } from '../types'
 
 //ZOD - Crear un Esquema con las formas que quiero que tengan los Types
 //voy a gregando los tipos de datos que voy a recibir de la API - voy a crear un esquema de validación para el objeto que voy a recibir de la API
-// const Weather = z.object({
-//     name: z.string(),//verifica que el objeto tenga la propiedad name y que sea un string
-//     main: z.object({
-//         temp: z.number(),//verifica que el objeto tenga la propiedad main y que sea un objeto
-//         temp_max: z.number(),//verifica que el objeto tenga la propiedad main y que sea un objeto
-//         temp_min: z.number()//verifica que el objeto tenga la propiedad main y que sea un objeto
-//     })
-// })
+const Weather = z.object({
+     name: z.string(),//verifica que el objeto tenga la propiedad name y que sea un string
+     main: z.object({
+        temp: z.number(),//verifica que el objeto tenga la propiedad main y que sea un objeto
+        temp_max: z.number(),//verifica que el objeto tenga la propiedad main y que sea un objeto
+        temp_min: z.number()//verifica que el objeto tenga la propiedad main y que sea un objeto
+    })
+})
 
 //Creación de Types para Zod
-//type Weather = z.infer<typeof Weather> //infer - infiere el tipo de dato que va a recibir - es como un type guard pero con zod - es una forma de validar el objeto que estamos recibiendo de la API - es una forma de comprobar si el objeto que le estamos pasando es del tipo Weather 
+export type Weather = z.infer<typeof Weather> //infer - infiere el tipo de dato que va a recibir - es como un type guard pero con zod - es una forma de validar el objeto que estamos recibiendo de la API - es una forma de comprobar si el objeto que le estamos pasando es del tipo Weather 
 
 
 
 //Valibot - Crear un Esquema con las formas que quiero que tengan los Types
-const WeatherSchema = object({
-    name: string(),//verifica que el objeto tenga la propiedad name y que sea un string
-    main: object({
-        temp: number(),//verifica que el objeto tenga la propiedad main y que sea un objeto
-        temp_max: number(),//verifica que el objeto tenga la propiedad main y que sea un objeto
-        temp_min: number()//verifica que el objeto tenga la propiedad main y que sea un objeto
-    })
-})
+// const WeatherSchema = object({
+//     name: string(),//verifica que el objeto tenga la propiedad name y que sea un string
+//     main: object({
+//         temp: number(),//verifica que el objeto tenga la propiedad main y que sea un objeto
+//         temp_max: number(),//verifica que el objeto tenga la propiedad main y que sea un objeto
+//         temp_min: number()//verifica que el objeto tenga la propiedad main y que sea un objeto
+//     })
+// })
 
-type Weather = InferOutput<typeof WeatherSchema> //InferOutput - infiere el tipo de dato que va a recibir 
+// type Weather = InferOutput<typeof WeatherSchema> //InferOutput - infiere el tipo de dato que va a recibir 
 
 export default function useWeather() {
+    
+    const [weather, setWeather] = useState<Weather>({
+        //Valores iniciales como vacio y es de type Weather
+        name: '',
+        main: {
+            temp: 0,
+            temp_max: 0,
+            temp_min: 0
+        }
+    })
     
     //función que va a consultar el clima -  fetch(buscar el clima)
     //fetchWeather toma una busqueda de tipo SearchType como argumento y devuelve una promesa que resuelve en un objeto de tipo Weather
@@ -94,26 +105,27 @@ export default function useWeather() {
 
 
             //Zod - libreria
-            // const {data:weatherResult}= await axios.get(weatherUrl)
-            // //safeParse - Toma el resultado de la consulta que tenemos en nuestra API y va a revisar que esas propiedades que estoy resiviendo corresponde al esquema que definimos arriba, retorna un True o False - safeParse es lo mismo que Type Guard pero con zod y mas sencillo
-            // const result = Weather.safeParse(weatherResult)//safeParse - parsea el objeto que le estamos pasando y verifica si es del tipo Weather - devuelve un objeto con la propiedad success y la propiedad data o error
-            // //console.log(result)//result es un objeto que contiene la respuesta de la API
+            const {data:weatherResult}= await axios.get(weatherUrl)
+            //safeParse - Toma el resultado de la consulta que tenemos en nuestra API y va a revisar que esas propiedades que estoy resiviendo corresponde al esquema que definimos arriba, retorna un True o False - safeParse es lo mismo que Type Guard pero con zod y mas sencillo
+             const result = Weather.safeParse(weatherResult)//safeParse - parsea el objeto que le estamos pasando y verifica si es del tipo Weather - devuelve un objeto con la propiedad success y la propiedad data o error
+            //console.log(result)//result es un objeto que contiene la respuesta de la API
             
-            // //result va a extraer la informacion que hemos definido en el esquema de validacion
-            // if(result.success){
+            //result va a extraer la informacion que hemos definido en el esquema de validacion
+            if(result.success){
             //     //console.log(result.data)//result es un objeto que contiene la respuesta de la API
             //     console.log(result.data.name)//nombre de la ciudad
-            // }
+                setWeather(result.data)//setWeather es una función que actualiza el estado de la variable weather - ahora la información estara en el state
+            }
 
 
 
             //Valibot - libreria
-            const {data:weatherResult}= await axios.get(weatherUrl)
-            const result = parse(WeatherSchema, weatherResult)// A parse le pasamos primero el esquema y luego el objeto que queremos validar o resultado de la consulta
-            //console.log(result)//result es un objeto que contiene la respuesta de la API
-            if(result){
-                console.log(result.name)//nombre de la ciudad
-            }
+            // const {data:weatherResult}= await axios.get(weatherUrl)
+            // const result = parse(WeatherSchema, weatherResult)// A parse le pasamos primero el esquema y luego el objeto que queremos validar o resultado de la consulta
+            // //console.log(result)//result es un objeto que contiene la respuesta de la API
+            // if(result){
+            //     console.log(result.name)//nombre de la ciudad
+            // }
 
 
         } catch (error) {
@@ -122,6 +134,7 @@ export default function useWeather() {
         }
     }
     return{
+        weather,
         fetchWeather
     }
  }
