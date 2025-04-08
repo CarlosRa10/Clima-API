@@ -63,6 +63,9 @@ export default function useWeather() {
             temp_min: 0
         }
     })
+
+
+    const [loading, setLoading] = useState(false)
     
     //función que va a consultar el clima -  fetch(buscar el clima)
     //fetchWeather toma una busqueda de tipo SearchType como argumento y devuelve una promesa que resuelve en un objeto de tipo Weather
@@ -70,6 +73,7 @@ export default function useWeather() {
         //console.log('Consultando...')
 
         const appId = import.meta.env.VITE_API_KEY//API key de OpenWeatherMap
+        setLoading(true)//setLoading es una función que actualiza el estado de la variable loading - ahora loading sera true porque estamos consultando la API
 
         try {
             //primer llamado a la API de OpenWeatherMap para obtener la latitud y longitud de la ciudad
@@ -114,7 +118,7 @@ export default function useWeather() {
             if(result.success){
             //     //console.log(result.data)//result es un objeto que contiene la respuesta de la API
             //     console.log(result.data.name)//nombre de la ciudad
-                setWeather(result.data)//setWeather es una función que actualiza el estado de la variable weather - ahora la información estara en el state
+                setWeather(result.data)//setWeather es una función que actualiza el estado de la variable weather - ahora la información estara en el state  
             }
 
 
@@ -131,6 +135,8 @@ export default function useWeather() {
         } catch (error) {
             console.log(error)
             
+        }finally{
+            setLoading(false)//setLoading es una función que actualiza el estado de la variable loading - ahora loading sera false porque ya tenemos la información
         }
     }
 
@@ -141,6 +147,7 @@ export default function useWeather() {
 
     return{
         weather,
+        loading,
         fetchWeather,
         hasWeatherData
     }
