@@ -14,7 +14,7 @@ function App() {
   
   return (
     <>
-      <h1 className={styles.title}>Hola Vite + React + TypeScript + CSS Modules!</h1>
+      <h1 className={styles.title}>Aplicación del Clima</h1>
 
       <div className={styles.container}>
 
