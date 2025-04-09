@@ -1,4 +1,5 @@
 import styles from './App.module.css'
+import Alert from './components/Alert/Alert'
 import Form from './components/Form/Form'
 import Spinner from './components/Spinner/Spinner'
 import WeatherDetail from './components/WeatherDetail/WeatherDetail'
@@ -9,7 +10,7 @@ import useWeather from './hooks/useWeather'
 function App() {
   //Extraemos la función fetchWeather de useWeather
   // todo esto es lo que exportando de useWeather.tsx
-  const {weather,loading, fetchWeather, hasWeatherData} = useWeather()
+  const {weather,loading,notFound, fetchWeather, hasWeatherData} = useWeather()
   
   return (
     <>
@@ -26,6 +27,8 @@ function App() {
 
         {/* Si hasWeatherData es true entonces mostramos el componente WeatherDetail */}
         {hasWeatherData &&  <WeatherDetail weather={weather} />}
+
+        {notFound && <Alert>Ciudad no encontrada</Alert>}
 
       </div>
     </>

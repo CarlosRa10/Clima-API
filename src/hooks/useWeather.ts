@@ -52,20 +52,20 @@ export type Weather = z.infer<typeof Weather> //infer - infiere el tipo de dato 
 
 // type Weather = InferOutput<typeof WeatherSchema> //InferOutput - infiere el tipo de dato que va a recibir 
 
+const initialState = {
+    name: '',
+    main: {
+        temp: 0,
+        temp_max: 0,
+        temp_min: 0
+    }
+}
+
 export default function useWeather() {
     
-    const [weather, setWeather] = useState<Weather>({
-        //Valores iniciales como vacio y es de type Weather
-        name: '',
-        main: {
-            temp: 0,
-            temp_max: 0,
-            temp_min: 0
-        }
-    })
-
-
+    const [weather, setWeather] = useState<Weather>(initialState)
     const [loading, setLoading] = useState(false)
+    const [notFound, setNotFound] = useState(false)//notFound es un booleano que indica si se encontró la ciudad o no - se usa para mostrar u ocultar el componente WeatherDetail.tsx
     
     //función que va a consultar el clima -  fetch(buscar el clima)
     //fetchWeather toma una busqueda de tipo SearchType como argumento y devuelve una promesa que resuelve en un objeto de tipo Weather
@@ -74,13 +74,33 @@ export default function useWeather() {
 
         const appId = import.meta.env.VITE_API_KEY//API key de OpenWeatherMap
         setLoading(true)//setLoading es una función que actualiza el estado de la variable loading - ahora loading sera true porque estamos consultando la API
-
+        setWeather(initialState)
+        setNotFound(false);
         try {
             //primer llamado a la API de OpenWeatherMap para obtener la latitud y longitud de la ciudad
             const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${search.city},${search.country}&appid=${appId}`
             //console.log(geoUrl)
             const {data}= await axios.get(geoUrl)//axios.get hace una petición GET a la URL geoUrl y espera la respuesta
             //console.log(data)//data es un objeto que contiene la respuesta de la API
+
+            //Comprobar si existe 
+            if(!data[0]){
+                //console.log('No se encontró la ciudad')
+                setNotFound(true)//setNotFound es una función que actualiza el estado de la variable notFound - ahora notFound sera true porque no se encontró la ciudad
+                return
+            }
+//// 3. Validar que el nombre de la ciudad y país coincidan (ignorando mayúsculas/espacios)
+            const apiCityName = data[0].name.trim().toLowerCase();
+            const apiCountryCode = data[0].country.trim().toLowerCase();
+            const userCityName = search.city.trim().toLowerCase();
+            const userCountryCode = search.country.trim().toLowerCase();
+
+            if (apiCityName !== userCityName || apiCountryCode !== userCountryCode) {
+                setNotFound(true); // No coincide exactamente
+                return;
+            }
+
+
             const lat = data[0].lat//latitud de la ciudad
             const lon = data[0].lon//longitud de la ciudad
             //console.log(lat, lon)//latitud y longitud de la ciudad
@@ -110,6 +130,9 @@ export default function useWeather() {
 
             //Zod - libreria
             const {data:weatherResult}= await axios.get(weatherUrl)
+            
+            
+            
             //safeParse - Toma el resultado de la consulta que tenemos en nuestra API y va a revisar que esas propiedades que estoy resiviendo corresponde al esquema que definimos arriba, retorna un True o False - safeParse es lo mismo que Type Guard pero con zod y mas sencillo
              const result = Weather.safeParse(weatherResult)//safeParse - parsea el objeto que le estamos pasando y verifica si es del tipo Weather - devuelve un objeto con la propiedad success y la propiedad data o error
             //console.log(result)//result es un objeto que contiene la respuesta de la API
@@ -119,6 +142,8 @@ export default function useWeather() {
             //     //console.log(result.data)//result es un objeto que contiene la respuesta de la API
             //     console.log(result.data.name)//nombre de la ciudad
                 setWeather(result.data)//setWeather es una función que actualiza el estado de la variable weather - ahora la información estara en el state  
+            }else {
+                setNotFound(true);
             }
 
 
@@ -133,7 +158,8 @@ export default function useWeather() {
 
 
         } catch (error) {
-            console.log(error)
+            console.error(error);
+            setNotFound(true);//setNotFound es una función que actualiza el estado de la variable notFound - ahora notFound sera true porque no se encontró la ciudad
             
         }finally{
             setLoading(false)//setLoading es una función que actualiza el estado de la variable loading - ahora loading sera false porque ya tenemos la información
@@ -148,6 +174,7 @@ export default function useWeather() {
     return{
         weather,
         loading,
+        notFound,
         fetchWeather,
         hasWeatherData
     }
